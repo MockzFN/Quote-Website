@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px;
+            position: relative;
+        }
+
+        .quote-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .quote-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .quote-card.shimmer::before {
+            left: 100%;
+        }
+
+        .quote-text {
+            font-size: 1.8rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            position: relative;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.5s ease;
+        }
+
+        .quote-text.fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .quote-text.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .quote-text::before,
+        .quote-text::after {
+            content: '"';
+            font-size: 4rem;
+            color: #667eea;
+            position: absolute;
+            font-family: 'Times New Roman', serif;
+            opacity: 0.3;
+        }
+
+        .quote-text::before {
+            top: -20px;
+            left: -30px;
+        }
+
+        .quote-text::after {
+            bottom: -40px;
+            right: -20px;
+        }
+
+        .quote-author {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 40px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.5s ease 0.1s;
+        }
+
+        .quote-author.fade-out {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .quote-author.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 70%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 40%;
+            left: 80%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quote-card {
+                padding: 40px 30px;
+                margin: 10px;
+            }
+            
+            .quote-text {
+                font-size: 1.4rem;
+            }
+            
+            .quote-text::before,
+            .quote-text::after {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="quote-card" id="quoteCard">
+            <div class="quote-text" id="quoteText">
+                Click the button below to discover wisdom, inspiration, and thoughts that might just change your day.
+            </div>
+            <div class="quote-author" id="quoteAuthor">
+                — Ready when you are
+            </div>
+            <button class="btn" id="newQuoteBtn" onclick="getNewQuote()">
+                New Quote
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const quotes = [
+            {
+                text: "The only way to do great work is to love what you do.",
+                author: "Steve Jobs"
+            },
+            {
+                text: "Life is what happens to you while you're busy making other plans.",
+                author: "John Lennon"
+            },
+            {
+                text: "The future belongs to those who believe in the beauty of their dreams.",
+                author: "Eleanor Roosevelt"
+            },
+            {
+                text: "It is during our darkest moments that we must focus to see the light.",
+                author: "Aristotle"
+            },
+            {
+                text: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                author: "Winston Churchill"
+            },
+            {
+                text: "The only impossible journey is the one you never begin.",
+                author: "Tony Robbins"
+            },
+            {
+                text: "In the end, we will remember not the words of our enemies, but the silence of our friends.",
+                author: "Martin Luther King Jr."
+            },
+            {
+                text: "Be yourself; everyone else is already taken.",
+                author: "Oscar Wilde"
+            },
+            {
+                text: "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.",
+                author: "Albert Einstein"
+            },
+            {
+                text: "You miss 100% of the shots you don't take.",
+                author: "Wayne Gretzky"
+            },
+            {
+                text: "Whether you think you can or you think you can't, you're right.",
+                author: "Henry Ford"
+            },
+            {
+                text: "The only person you are destined to become is the person you decide to be.",
+                author: "Ralph Waldo Emerson"
+            },
+            {
+                text: "Happiness is not something ready made. It comes from your own actions.",
+                author: "Dalai Lama"
+            },
+            {
+                text: "The best time to plant a tree was 20 years ago. The second best time is now.",
+                author: "Chinese Proverb"
+            },
+            {
+                text: "Don't judge each day by the harvest you reap but by the seeds that you plant.",
+                author: "Robert Louis Stevenson"
+            }
+        ];
+
+        let currentQuoteIndex = -1;
+
+        function getNewQuote() {
+            const quoteText = document.getElementById('quoteText');
+            const quoteAuthor = document.getElementById('quoteAuthor');
+            const quoteCard = document.getElementById('quoteCard');
+            
+            // Add shimmer effect
+            quoteCard.classList.add('shimmer');
+            setTimeout(() => quoteCard.classList.remove('shimmer'), 600);
+            
+            // Fade out current quote
+            quoteText.classList.add('fade-out');
+            quoteAuthor.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Get new quote (avoid repeating the same quote)
+                let newIndex;
+                do {
+                    newIndex = Math.floor(Math.random() * quotes.length);
+                } while (newIndex === currentQuoteIndex && quotes.length > 1);
+                
+                currentQuoteIndex = newIndex;
+                const quote = quotes[currentQuoteIndex];
+                
+                // Update content
+                quoteText.textContent = quote.text;
+                quoteAuthor.textContent = `— ${quote.author}`;
+                
+                // Fade in new quote
+                quoteText.classList.remove('fade-out');
+                quoteText.classList.add('fade-in');
+                quoteAuthor.classList.remove('fade-out');
+                quoteAuthor.classList.add('fade-in');
+                
+                // Clean up classes
+                setTimeout(() => {
+                    quoteText.classList.remove('fade-in');
+                    quoteAuthor.classList.remove('fade-in');
+                }, 500);
+                
+            }, 250);
+        }
+
+        // Add some interactivity
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                e.preventDefault();
+                getNewQuote();
+            }
+        });
+
+        // Auto-start with first quote after a moment
+        setTimeout(() => {
+            getNewQuote();
+        }, 1000);
+    </script>
+</body>
+</html>
